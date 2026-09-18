@@ -5,7 +5,7 @@
 <title>わたしのまちマップ</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>body{margin:0;font-family:sans-serif}h1{margin:16px;font-size:1.4rem}#map{height:calc(100vh - 70px)}</style>
+<style>body{margin:0;font-family:sans-serif}h1{margin:16px;font-size:1.4rem}#map{height:calc(100vh - 70px)}.custom-icon{font-size:22px;line-height:1;text-align:center;text-shadow:0 0 3px #fff}</style>
 </head>
 <body>
 <h1>わたしのまちマップ</h1><div id="map"></div>
@@ -15,15 +15,28 @@ L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',{
  attribution:'&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+const getIcon=(name='')=>{
+ const n=name;
+ if(/カレ|カリー|curry|Curry|CURRY/i.test(n)){
+  return L.divIcon({html:'🍛',className:'custom-icon',iconSize:[28,28],iconAnchor:[14,14]});
+ }
+ if(/ラーメ|らーめ|ramen|Ramen|RAMEN|拉麺|つけ麺|中華そば/i.test(n)){
+  return L.divIcon({html:'🍜',className:'custom-icon',iconSize:[28,28],iconAnchor:[14,14]});
+ }
+ return L.divIcon({html:'📍',className:'custom-icon',iconSize:[24,24],iconAnchor:[12,24]});
+};
+
 fetch('./mapdata.geojson').then(r=>r.json()).then(data=>{
  const layer=L.geoJSON(data,{
+  pointToLayer:(feature,latlng)=>{
+   return L.marker(latlng,{icon:getIcon(feature.properties?.name)});
+  },
   onEachFeature:(feature,marker)=>{
    const p=feature.properties||{};
    const lines=[];
    if(p.name) lines.push(`<strong>${p.name}</strong>`);
-   if(p.category) lines.push(`カテゴリー：${p.category}`);
-   if(p.address) lines.push(`住所：${p.address}`);
-   if(p.description) lines.push(p.description);
+   if(p['営業の種類']) lines.push(`営業の種類：${p['営業の種類']}`);
+   if(p['所在地_連結表記']) lines.push(`住所：${p['所在地_連結表記']}`);
    marker.bindPopup(lines.join('<br>'));
   }
  }).addTo(map);

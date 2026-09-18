@@ -23,6 +23,9 @@ const getIcon=(name='')=>{
  if(/ラーメ|らーめ|ramen|Ramen|RAMEN|拉麺|つけ麺|中華そば/i.test(n)){
   return L.divIcon({html:'🍜',className:'custom-icon',iconSize:[28,28],iconAnchor:[14,14]});
  }
+ if(/寿司|すし|sushi|Sushi|SUSHI/i.test(n)){
+  return L.divIcon({html:'🍣',className:'custom-icon',iconSize:[28,28],iconAnchor:[14,14]});
+ }
  return L.divIcon({html:'📍',className:'custom-icon',iconSize:[24,24],iconAnchor:[12,24]});
 };
 
